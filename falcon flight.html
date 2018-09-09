@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+    
+    <head>
+    <title>Falcon Flight</title>
+</head>
+
+<body>
+
+    <canvas id="gameCanvas" width="800" height="800"></canvas>
+    <script>
+        var canvas, canvasContext;
+
+        window.onload = function() {
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+
+            document.addEventListener('keydown', keyPressed);
+            document.addEventListener('keyup', keyReleased);
+
+            setInterval(mainloop, 1000 / 50);
+        }
+
+        //ship
+        var shipXpos = 400;
+        var shipYpos = 700;
+        var shipXspeed = 0;
+        const shipWidth = 50;
+        const shipHeight = 50;
+
+        //keys
+        const A_KEY = 65;
+        const D_KEY = 68;
+        const W_KEY = 87;
+
+        function mainloop() {
+            colorRect(0, 0, canvas.width, canvas.height, 'black');
+            colorRect(shipXpos, shipYpos, shipWidth, shipHeight, 'red');
+        }
+
+
+        function colorRect(x, y, w, h, color) {
+            canvasContext.fillStyle = color;
+            canvasContext.fillRect(x, y, w, h);
+        }
+
+        function keyPressed(evt) {
+
+
+
+            if (evt.keyCode == LEFT_KEY) { // 37 should be a const   
+
+                leftArrowPressed = true; // opposite should be done for keyRelease function  
+
+            }
+
+        }
+
+        function playerMove() {
+
+        }
+        
+        function keyPressed() {
+            
+        }
+        
+        function keyReleased() {
+            
+        }
+        //make default name "lazy"
+    </script>
+</body>
+</html>
