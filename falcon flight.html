@@ -24,7 +24,7 @@
         //ship
         var shipXpos = 400;
         var shipYpos = 700;
-        var shipXspeed = 0;
+        var shipSpeed = 5;
         const shipWidth = 50;
         const shipHeight = 50;
 
@@ -32,10 +32,16 @@
         const A_KEY = 65;
         const D_KEY = 68;
         const W_KEY = 87;
+        var aKeyPressed = false;
+        var dKeyPressed = false;
+        var wKeyPressed = false;
 
-        function mainloop() {
+        function mainloop() { // runs code 50 time per second 
             colorRect(0, 0, canvas.width, canvas.height, 'black');
             colorRect(shipXpos, shipYpos, shipWidth, shipHeight, 'red');
+            
+            playerMove();
+            
         }
 
 
@@ -45,28 +51,42 @@
         }
 
         function keyPressed(evt) {
-
-
-
-            if (evt.keyCode == LEFT_KEY) { // 37 should be a const   
-
-                leftArrowPressed = true; // opposite should be done for keyRelease function  
-
+            if (evt.keyCode == A_KEY) {
+                aKeyPressed = true;
             }
-
+            if (evt.keyCode == D_KEY) {
+                dKeyPressed = true;
+            }
+            if (evt.keyCode == W_KEY) {
+                wKeyPressed = true;
+            }
         }
+
+
+        function keyReleased(evt) {
+
+            if (evt.keyCode == A_KEY) {
+                aKeyPressed = false;
+            }
+            if (evt.keyCode == D_KEY) {
+                dKeyPressed = false;
+            }
+            if (evt.keyCode == W_KEY) {
+                wKeyPressed = false;
+            }
+        }
+
 
         function playerMove() {
 
+            if (aKeyPressed) {
+                shipXpos = shipXpos - shipSpeed;
+            }
+            if (dKeyPressed) {
+                shipXpos = shipXpos + shipSpeed;
+            }
         }
-        
-        function keyPressed() {
-            
-        }
-        
-        function keyReleased() {
-            
-        }
+
         //make default name "lazy"
     </script>
 </body>
