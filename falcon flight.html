@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
-    
-    <head>
+
+<head>
     <title>Falcon Flight</title>
 </head>
 
@@ -15,6 +15,7 @@
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
 
+
             document.addEventListener('keydown', keyPressed);
             document.addEventListener('keyup', keyReleased);
 
@@ -24,7 +25,8 @@
         //ship
         var shipXpos = 400;
         var shipYpos = 700;
-        var shipSpeed = 5;
+        var shipSpeed = 10;
+
         const shipWidth = 50;
         const shipHeight = 50;
 
@@ -36,18 +38,135 @@
         var dKeyPressed = false;
         var wKeyPressed = false;
 
+        //block
+        var blockSize = 0;
+        var blockXpos = 0
+        var blockYpos = 0;
+        var blockSpeed = 5;
+        var runRandom = true;
+        var blockArray = [];
+        var topSpawnSpeed = 3000;
+        var bottomSpawnSpeed = 1000;
+        var interval = setInterval(respawn, Math.floor(Math.random() * (topSpawnSpeed - bottomSpawnSpeed)) + bottomSpawnSpeed);
+
+        //game
+        var gameRun = true;
+
+        //laser
+        var laserWidth = 0;
+        var laserHeight = 0;
+        var laserSpeed = 35;
+        var laserYpos = 0;
+        var laserXpos = 0;
+        var laserGo = true;
+
+
+
+
         function mainloop() { // runs code 50 time per second 
-            colorRect(0, 0, canvas.width, canvas.height, 'black');
-            colorRect(shipXpos, shipYpos, shipWidth, shipHeight, 'red');
-            
-            playerMove();
-            
+            if (gameRun) {
+                colorRect(0, 0, canvas.width, canvas.height, 'black');
+                colorRect(shipXpos, shipYpos, shipWidth, shipHeight, 'red');
+                colorRect(laserXpos, laserYpos, laserWidth, laserHeight, 'green');
+
+                if (runRandom) {
+                    blockRandom();
+                    runRandom = false;
+                }
+
+
+                playerMove();
+                render();
+                movement();
+                laser();
+                laserMove();
+            }
         }
 
+        function render() {
+            blockArray.forEach(function(block, index) {
+                colorRect(block.blockXpos, block.blockYpos, block.blockSize, block.blockSize, 'blue');
+            });
+
+        }
 
         function colorRect(x, y, w, h, color) {
             canvasContext.fillStyle = color;
             canvasContext.fillRect(x, y, w, h);
+        }
+
+
+        function blockRandom() {
+            var newBlock = {
+                blockSize: Math.floor(Math.random() * (100 - 10)) + 20,
+                blockXpos: Math.floor(Math.random() * (canvas.width - 5)) + 0,
+                blockYpos: 0 - blockSize * 4
+
+            }
+            return newBlock;
+
+        }
+
+        function movement() {
+            blockArray.forEach(function(block, index) {
+                block.blockYpos = block.blockYpos + blockSpeed;
+
+                if (block.blockYpos > canvas.height + block.blockSize) {
+                    block.blockSize = Math.floor(Math.random() * (100 - 10)) + 20;
+                    block.blockYpos = 0 - blockSize + Math.floor(Math.random() * (5 - 30)) + 30;;
+                    block.blockXpos = Math.floor(Math.random() * (canvas.width - 5)) + 0;
+                }
+
+                if (block.blockYpos > shipYpos - block.blockSize && block.blockYpos < shipYpos + shipHeight && block.blockXpos > shipXpos - block.blockSize && block.blockXpos < shipXpos + shipWidth) {
+                    gameRun = false;
+                }
+                if (block.blockYpos > laserYpos - block.blockSize && block.blockYpos < laserYpos + laserHeight && block.blockXpos > laserXpos - block.blockSize && block.blockXpos < laserXpos + laserWidth) {
+                    console.log('destroy');
+                    blockArray.splice(blockRandom());
+
+                }
+            })
+            if (shipXpos < 0) {
+                shipXpos = shipXpos + shipSpeed;
+            }
+
+            if (shipXpos > canvas.width - shipWidth) {
+                shipXpos = shipXpos - shipSpeed;
+            }
+
+        };
+
+
+
+        function respawn() {
+            blockArray.push(blockRandom());
+
+        }
+
+
+        function slower() {
+            var interval = setInterval(respawn, Math.floor(Math.random() * (16000 - 13000)) + 13000);
+
+        }
+
+        function laser() {
+            if (wKeyPressed && laserGo) {
+                laserWidth = 15;
+                laserHeight = 40;
+                laserXpos = shipXpos + 17;
+                laserYpos = shipYpos;
+                laserGo = false;
+                setTimeout(laserTimer, 3000);
+            }
+        }
+
+        function laserTimer() {
+            laserGo = true;
+        }
+
+        function laserMove() {
+            laserYpos = laserYpos - laserSpeed;
+
         }
 
         function keyPressed(evt) {
@@ -59,6 +178,7 @@
             }
             if (evt.keyCode == W_KEY) {
                 wKeyPressed = true;
+
             }
         }
 
@@ -82,12 +202,17 @@
             if (aKeyPressed) {
                 shipXpos = shipXpos - shipSpeed;
             }
+
             if (dKeyPressed) {
                 shipXpos = shipXpos + shipSpeed;
             }
+            //          console.log(wKeyPressed)
         }
 
+
         //make default name "lazy"
+
     </script>
 </body>
+
 </html>
