@@ -20,6 +20,7 @@
             document.addEventListener('keyup', keyReleased);
 
             setInterval(mainloop, 1000 / 50);
+            setInterval(endScreen, 1000 / 50);
         }
 
         //ship
@@ -45,12 +46,15 @@
         var blockSpeed = 5;
         var runRandom = true;
         var blockArray = [];
-        var topSpawnSpeed = 3000;
+        var topSpawnSpeed = 4000;
         var bottomSpawnSpeed = 1000;
-        var interval = setInterval(respawn, Math.floor(Math.random() * (topSpawnSpeed - bottomSpawnSpeed)) + bottomSpawnSpeed);
+        //        var interval = setInterval(respawn, Math.floor(Math.random() * (topSpawnSpeed - bottomSpawnSpeed)) + bottomSpawnSpeed);
 
         //game
         var gameRun = true;
+        var score = 0;
+        var difficulty = prompt('what level of difficulty (1,2,3)', '2') || '4';
+        var timer = true;
 
         //laser
         var laserWidth = 0;
@@ -60,27 +64,46 @@
         var laserXpos = 0;
         var laserGo = true;
 
-
-
+        //name
+        var name = prompt('What is your name?', 'Lazy') || 'Prick';
 
         function mainloop() { // runs code 50 time per second 
             if (gameRun) {
                 colorRect(0, 0, canvas.width, canvas.height, 'black');
                 colorRect(shipXpos, shipYpos, shipWidth, shipHeight, 'red');
                 colorRect(laserXpos, laserYpos, laserWidth, laserHeight, 'green');
+                colorText('40pt Calibri', 'white', 'Score: ' + score, 50, 50);
 
                 if (runRandom) {
                     blockRandom();
                     runRandom = false;
                 }
+                if (timer) {
+                    respawn();
+                    timer = false;
+                }
 
-
+                response();
                 playerMove();
                 render();
                 movement();
                 laser();
                 laserMove();
+
+
             }
+
+        }
+
+        function endScreen() {
+            console.log(bottomSpawnSpeed);
+            console.log(topSpawnSpeed);
+            if (gameRun == false) {
+
+                colorRect(0, 0, canvas.width, canvas.height, 'black');
+                colorText('30pt Calibri', 'white', 'You Scored ' + score + ', ' + name, 250, 300);
+            }
+
         }
 
         function render() {
@@ -93,6 +116,12 @@
         function colorRect(x, y, w, h, color) {
             canvasContext.fillStyle = color;
             canvasContext.fillRect(x, y, w, h);
+        }
+
+        function colorText(f, c, t, x, y) {
+            canvasContext.font = f;
+            canvasContext.fillStyle = c;
+            canvasContext.fillText(t, x, y);
         }
 
 
@@ -115,15 +144,18 @@
                     block.blockSize = Math.floor(Math.random() * (100 - 10)) + 20;
                     block.blockYpos = 0 - blockSize + Math.floor(Math.random() * (5 - 30)) + 30;;
                     block.blockXpos = Math.floor(Math.random() * (canvas.width - 5)) + 0;
+                    score = score + 1;
+                    console.log(score);
                 }
 
                 if (block.blockYpos > shipYpos - block.blockSize && block.blockYpos < shipYpos + shipHeight && block.blockXpos > shipXpos - block.blockSize && block.blockXpos < shipXpos + shipWidth) {
                     gameRun = false;
                 }
-                if (block.blockYpos > laserYpos - block.blockSize && block.blockYpos < laserYpos + laserHeight && block.blockXpos > laserXpos - block.blockSize && block.blockXpos < laserXpos + laserWidth) {
-                    console.log('destroy');
-                    blockArray.splice(blockRandom());
 
+                if (block.blockYpos > laserYpos - block.blockSize && block.blockYpos < laserYpos + laserHeight && block.blockXpos > laserXpos - block.blockSize && block.blockXpos < laserXpos + laserWidth) {
+                    block.blockSize = Math.floor(Math.random() * (100 - 10)) + 20;
+                    block.blockYpos = 0 - blockSize + Math.floor(Math.random() * (5 - 30)) + 30;;
+                    block.blockXpos = Math.floor(Math.random() * (canvas.width - 5)) + 0;
                 }
             })
             if (shipXpos < 0) {
@@ -140,12 +172,28 @@
 
         function respawn() {
             blockArray.push(blockRandom());
+            setTimeout(respawn, Math.floor(Math.random() * (topSpawnSpeed - bottomSpawnSpeed)) + bottomSpawnSpeed);
+
 
         }
 
+        function response() {
+            if (difficulty == '1') {
+                bottomSpawnSpeed = 1500;
+                topSpawnSpeed = 5000;
 
-        function slower() {
-            var interval = setInterval(respawn, Math.floor(Math.random() * (16000 - 13000)) + 13000);
+            } else if (difficulty == '2') {
+                bottomSpawnSpeed = 1200;
+                topSpawnSpeed = 2000;
+
+            } else if (difficulty == '3') {
+                bottomSpawnSpeed = 500;
+                topSpawnSpeed = 1000;
+            } else if (difficulty == '4') {
+                bottomSpawnSpeed = 0;
+                topSpawnSpeed = 0;
+            }
+
 
         }
 
@@ -168,6 +216,7 @@
             laserYpos = laserYpos - laserSpeed;
 
         }
+
 
         function keyPressed(evt) {
             if (evt.keyCode == A_KEY) {
@@ -206,12 +255,7 @@
             if (dKeyPressed) {
                 shipXpos = shipXpos + shipSpeed;
             }
-            //          console.log(wKeyPressed)
         }
-
-
-        //make default name "lazy"
-
     </script>
 </body>
 
